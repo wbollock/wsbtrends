@@ -6,6 +6,10 @@ This project, which hopefully will not be quickly abandoned, is meant to show tr
 
 [Swaggy Stocks](https://swaggystocks.com/dashboard/wallstreetbets/ticker-sentiment) has done this better than I could ever hope, with sentiment analysis and neural networks. However, there are only metrics for the last 24 hours. I hope I don't run into an issue they encountered with getting even faster metrics.
 
+## Requirements
+
+* python-praw
+
 ## Planning
 
 1. Learn how to crawl reddit, specifically the DD WSB thread in this format:
