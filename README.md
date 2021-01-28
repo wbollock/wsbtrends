@@ -9,11 +9,26 @@ This project, which hopefully will not be quickly abandoned, is meant to show tr
 ## Planning
 
 1. Learn how to crawl reddit, specifically the DD WSB thread in this format:
-        a. Appears to be two pinned threads:
-           i. [What Are Your Moves Tomorrow, November 24, 2020](https://www.reddit.com/r/wallstreetbets/comments/jzqior/what_are_your_moves_tomorrow_november_24_2020/)
-           ii. [Daily Discussion Thread for November 24, 2020](https://www.reddit.com/r/wallstreetbets/comments/k03375/daily_discussion_thread_for_november_24_2020/)
-        b. On big discussion days there appear to be multiple thread parts.
-           i. [Daily Discussion Thread Part 5 for January 28, 2021](https://www.reddit.com/r/wallstreetbets/comments/l78za1/daily_discussion_thread_part_5_for_january_28_2021/)
+   * Appears to be two pinned threads:
+     * [What Are Your Moves Tomorrow, November 24, 2020](https://www.reddit.com/r/wallstreetbets/comments/jzqior/what_are_your_moves_tomorrow_november_24_2020/)
+     * [Daily Discussion Thread for November 24, 2020](https://www.reddit.com/r/wallstreetbets/comments/k03375/daily_discussion_thread_for_november_24_2020/)
+   * On big discussion days there appear to be multiple thread parts.
+        * [Daily Discussion Thread Part 5 for January 28, 2021](https://www.reddit.com/r/wallstreetbets/comments/l78za1/daily_discussion_thread_part_5_for_january_28_2021/)
+
+2. Collect comments in some format of the two daily threads.
+3. Store them somewhere.
+4. Count for most $stock/ticker mentions.
+5. Display in graph.
+6. Publish graph to web page.
+7. Calculate % change in last day, week?
+
+## Features
+
+* Obviously price of the $stock would be useful
+* % change over time
+* End goal is to identify the gravy trains as they're starting
+
+
         
 
 
@@ -23,3 +38,15 @@ This project, which hopefully will not be quickly abandoned, is meant to show tr
 
 * [wsbtickerbot](https://github.com/RyanElliott10/wsbtickerbot) Damn, this seems to be most of what I need.
 * [Swaggy Stocks Reddit Post](https://www.reddit.com/r/wallstreetbets/comments/blukl1/i_created_a_fullblown_wallstreetbets_sentiment/)
+* [Reddit Scraping Guide 2018](https://www.storybench.org/how-to-scrape-reddit-with-python/)
+* [PRAW Getting Started](https://praw.readthedocs.io/en/v7.1.0/getting_started/quick_start.html)
+* [Reddit API Wiki](https://github.com/reddit-archive/reddit/wiki/API)
+* [Python Structure](https://www.reddit.com/r/learnpython/comments/37lbe3/which_is_more_pythonic_should_i_have_a_main/)
+
+
+## Technologies
+
+* Scrapper
+   * Python on cron seems to be my favorite. Wonder if I'll hit API limits. API limit seems to be 60 requests per minute.
+* No more large text files. SQLite seems to be a good option for storage.
+* PHP for presentation as always? I'd like to use some python graphs
