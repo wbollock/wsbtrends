@@ -102,25 +102,85 @@ def getTicker(commentsFile):
     # msft.info['ask'] for current price?
     # msft.info['bid] for current.. buying price?
     tickerFile =  "tickers.txt"
+
+    # credit: https://github.com/RyanElliott10/wsbtickerbot/blob/master/wsbtickerbot.py
+    # common words on WSB to ignore
+    blacklist_words = [
+      "YOLO", "TOS", "CEO", "CFO", "CTO", "DD", "BTFD", "WSB", "OK", "RH",
+      "KYS", "FD", "TYS", "US", "USA", "IT", "ATH", "RIP", "BMW", "GDP",
+      "OTM", "ATM", "ITM", "IMO", "LOL", "DOJ", "BE", "PR", "PC", "ICE",
+      "TYS", "ISIS", "PRAY", "PT", "FBI", "SEC", "GOD", "NOT", "POS", "COD",
+      "AYYMD", "FOMO", "TL;DR", "EDIT", "STILL", "LGMA", "WTF", "RAW", "PM",
+      "LMAO", "LMFAO", "ROFL", "EZ", "RED", "BEZOS", "TICK", "IS", "DOW"
+      "AM", "PM", "LPT", "GOAT", "FL", "CA", "IL", "PDFUA", "MACD", "HQ",
+      "OP", "DJIA", "PS", "AH", "TL", "DR", "JAN", "FEB", "JUL", "AUG",
+      "SEP", "SEPT", "OCT", "NOV", "DEC", "FDA", "IV", "ER", "IPO", "RISE"
+      "IPA", "URL", "MILF", "BUT", "SSN", "FIFA", "USD", "CPU", "AT",
+      "GG", "ELON", "GOP", "IPO", "WSB", "HIS", "THE", "ARK", "FUCK"
+   ]
     
 
     # for dev/testing
     if os.path.exists(tickerFile):
         os.remove(tickerFile)
 
+
+    # TODO: improve regex
+    # test regex more
+    # right now {3,4} matches 3-4 character TICKERS
+    # not 1,2, or 5 letter tickers
+    # e.g KO = Coca-Cola
+    # C = Citigroup
+    # BRK.A = Berkshire
+
+    # TODO: clear special characters like BABA. (the period)
+
+    # TODO: might be easier to compare to already valid list of stock tickers.. if huge put in mongodb
+    
+
+    
     with open(commentsFile) as c:
         for line in c:
-            match = re.findall(r'\b[A-Z]{3}\b[.!?]?',line)
+            match = re.findall(r'\b[A-Z]{3,4}\b[.!?]?',line)
             # if match contains data
             if match:
-                
+                # subtract from blacklist
+                match = list(set(match) - set(blacklist_words))
+
 
                 for item in match:
                     file = open(tickerFile, "a")
                     file.write(item)
+                    file.write(' ')
                     file.close
+
+    return validateTicker(tickerFile)
                         
-           
+
+def validateTicker(tickerFile):
+    # test if it's a valid ticker
+    validFile = "validTickers.txt"
+    with open(tickerFile) as t:
+                for line in t:
+                    # for each individual "ticker"
+                    for word in line.split():
+                        # attempt to validate ticker
+                        testTicker = yf.Ticker(word)
+                        try:
+                            # if valid, start a new list
+                            testTicker.info
+                            # TODO: holy god this is slow
+                        except:
+                            # if not valid subtract from list
+                            # TODO: inefficient because removing from one list of lists, not entire post
+                            print("Invalid: ", word)
+                        
+                        # add good tickers to valid file
+                        file = open(validFile, "a")
+                        file.write(word)
+                        file.write(" ")
+                        file.close()
+        
     
     
 
