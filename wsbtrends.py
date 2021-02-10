@@ -14,7 +14,7 @@ import os
 
 def redditAuth():
     # authenticate with Praw
-    reddit = praw.Reddit("VexasAPI", user_agent="linux:wsbtrends:v1 (by /u/VexasAPI)")
+    reddit = praw.Reddit("EagleEyeAPI", user_agent="windows:wsbtrends:v1 (by /u/EagleEyeAPI)") #TODO: Read from local file so we don't have to switch out on every pull
     # ensure Praw stays read only
     reddit.read_only = True
 
@@ -80,9 +80,12 @@ def getComments(postList,reddit):
         # submission.comments.replace_more(limit=5)
 
         for comment in submission.comments.list():
-            file = open(commentsFile, "a")
-            file.write(comment.body)
-            file.close()
+            try: #Going to run into Unicode Encode Errors for some comments TODO: Look into Unicode Encode Errors
+                file = open(commentsFile, "a")
+                file.write(comment.body)
+                file.close()
+            except UnicodeEncodeError:
+                print(str(comment) + " couldn't be encoded.")
 
     # just top level comments
     # submission.comments.replace_more(limit=0)
@@ -135,7 +138,6 @@ def getTicker(commentsFile):
 
     # TODO: clear special characters like BABA. (the period)
 
-    # TODO: might be easier to compare to already valid list of stock tickers.. if huge put in mongodb
     
 
     
@@ -159,27 +161,28 @@ def getTicker(commentsFile):
 
 def validateTicker(tickerFile):
     # test if it's a valid ticker
+    print("Entering Testing")
     validFile = "validTickers.txt"
-    with open(tickerFile) as t:
-                for line in t:
+    NYSETicker = "NYSE.txt" #Pre-generated file TODO: Have file update when script runs
+    validTicker = {}
+    notcounted = {}
+    with open(NYSETicker, "r") as q:
+        print("Opened NYSE.txt")
+        for line in q:
+            validTicker[line.rstrip('\n')] = True
+        print(validTicker)
+    with open(tickerFile, "r") as t:
+                for line in t: #Not O(N^2) because it is only one line
                     # for each individual "ticker"
                     for word in line.split():
                         # attempt to validate ticker
-                        testTicker = yf.Ticker(word)
-                        try:
-                            # if valid, start a new list
-                            testTicker.info
-                            # TODO: holy god this is slow
-                        except:
-                            # if not valid subtract from list
-                            # TODO: inefficient because removing from one list of lists, not entire post
-                            print("Invalid: ", word)
-                        
-                        # add good tickers to valid file
-                        file = open(validFile, "a")
-                        file.write(word)
-                        file.write(" ")
-                        file.close()
+                        if validTicker.get(word, False):
+                            if notcounted.get(word, True):
+                                notcounted[word] = False
+                                file = open(validFile, "a")
+                                file.write(word)
+                                file.write(" ")
+                                file.close()
         
     
     

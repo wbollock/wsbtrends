@@ -2,3 +2,5 @@ redditinfo
 praw.ini
 comments.txt
 tickers.txt
+validTickers.txt
+test.py
