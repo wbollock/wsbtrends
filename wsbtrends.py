@@ -2,6 +2,11 @@
 
 # wsbtrends.py
 
+# To authenticate with Praw:
+# https://praw.readthedocs.io/en/latest/getting_started/authentication.html
+# create praw.ini and file "reddit_name"
+# reddit_name contents:
+# UserAPI
 
 # imports
 # for reddit
@@ -14,7 +19,17 @@ import os
 
 def redditAuth():
     # authenticate with Praw
-    reddit = praw.Reddit("EagleEyeAPI", user_agent="windows:wsbtrends:v1 (by /u/EagleEyeAPI)") #TODO: Read from local file so we don't have to switch out on every pull
+    # create file "reddit_name"
+    redditFileName = "reddit_name"
+
+    with open(redditFileName, 'r') as file:
+        redditUsername = file.read().replace('\n', '')
+
+    # alex you can keep it linux don't change it you weeb
+    userAgent = "linux:wsbtrends:v1 (by /u/" + redditUsername + ")"
+
+    # https://praw.readthedocs.io/en/latest/getting_started/authentication.html
+    reddit = praw.Reddit(redditUsername, user_agent=userAgent)
     # ensure Praw stays read only
     reddit.read_only = True
 

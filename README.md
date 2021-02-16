@@ -1,14 +1,21 @@
 # wsbtrends
 
-This project, which hopefully will not be quickly abandoned, is meant to show trending $stocks on /r/wallstreetbets in a simple manner. Ideally, it will be able to fetch trending stocks within short time frames, for example the last 30 minutes, 1 hour, etc.
+This project is meant to show trending `$stocks` on /r/wallstreetbets in a simple manner. Ideally, it will be able to fetch trending stocks within short time frames, for example the last 30 minutes, 1 hour, etc.
 
 ## Inspiration
 
-[Swaggy Stocks](https://swaggystocks.com/dashboard/wallstreetbets/ticker-sentiment) has done this better than I could ever hope, with sentiment analysis and neural networks. However, there are only metrics for the last 24 hours. I hope I don't run into an issue they encountered with getting even faster metrics.
+[Swaggy Stocks](https://swaggystocks.com/dashboard/wallstreetbets/ticker-sentiment) has done this better than I could ever hope, with sentiment analysis and neural networks.
+
+Reddit user [pdwp90](https://www.reddit.com/user/pdwp90) also has a similar project.
 
 ## Requirements
 
 * python-praw
+* praw [Reddit API Access](https://praw.readthedocs.io/en/latest/getting_started/authentication.html)
+
+Create a file titled `reddit_name` in your project folder with your desired Reddit username.
+
+Another file titled `praw.ini` with your praw settings is recommended.
 
 ## Planning
 
