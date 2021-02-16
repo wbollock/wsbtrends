@@ -2,17 +2,18 @@
 
 # wsbtrends.py
 
-# To authenticate with Praw:
-# https://praw.readthedocs.io/en/latest/getting_started/authentication.html
-# create praw.ini and file "reddit_name"
-# reddit_name contents:
-# UserAPI
 
 # imports
 # for reddit
 import praw
 # for stock info
 import yfinance as yf
+
+# yfinance seems to be the way to go for price
+    # msft = yf.Ticker("MSFT")
+    # msft.info for a dict of everything
+    # msft.info['ask'] for current price?
+    # msft.info['bid] for current.. buying price?
 
 import re
 import os
@@ -52,7 +53,7 @@ def getThread(reddit):
 
     postList = []
 
-    for submission in subreddit.hot(limit=5):
+    for submission in subreddit.hot(limit=2):
         # usually the top 2 `hot` submissions are stickied anyway, but an extra test to ensure
         if submission.stickied == True:
             postList.append(submission.id)
@@ -62,7 +63,7 @@ def getThread(reddit):
     #     print(items)
 
     # for dev/testing
-    postList = ['kjdkdk', 'kj17ga']
+    #postList = ['kjdkdk', 'kj17ga']
     # december 24
 
 
@@ -77,7 +78,7 @@ def getComments(postList,reddit):
 
     
     commentsFile = "comments.txt"
-    # for dev/testing
+    
     if os.path.exists(commentsFile):
         os.remove(commentsFile)
 
@@ -90,7 +91,8 @@ def getComments(postList,reddit):
 
         print("Writing to file...", item, submission.title)
 
-        submission.comments.replace_more(limit=5)
+        # limit=None is all comments
+        submission.comments.replace_more(limit=20)
         # for testing
         # submission.comments.replace_more(limit=5)
 
@@ -114,15 +116,13 @@ def getComments(postList,reddit):
 
 def getTicker(commentsFile):
     # extract ticker symbols from comments
-    # yfinance seems to be the way to go for price
-    # msft = yf.Ticker("MSFT")
-    # msft.info for a dict of everything
-    # msft.info['ask'] for current price?
-    # msft.info['bid] for current.. buying price?
+    # still needed with NYSE file because we really only want 3-5 character, usual tickers
+
     tickerFile =  "tickers.txt"
 
     # credit: https://github.com/RyanElliott10/wsbtickerbot/blob/master/wsbtickerbot.py
     # common words on WSB to ignore
+    
     blacklist_words = [
       "YOLO", "TOS", "CEO", "CFO", "CTO", "DD", "BTFD", "WSB", "OK", "RH",
       "KYS", "FD", "TYS", "US", "USA", "IT", "ATH", "RIP", "BMW", "GDP",
@@ -142,28 +142,23 @@ def getTicker(commentsFile):
     if os.path.exists(tickerFile):
         os.remove(tickerFile)
 
-
-    # TODO: improve regex
-    # test regex more
-    # right now {3,4} matches 3-4 character TICKERS
-    # not 1,2, or 5 letter tickers
-    # e.g KO = Coca-Cola
-    # C = Citigroup
-    # BRK.A = Berkshire
+    # TODO: thoughts on only limiting to 3-5 character tickers? filters out a lot of stuff like OR, ALL, 
 
     # TODO: clear special characters like BABA. (the period)
 
     
-
-    
     with open(commentsFile) as c:
         for line in c:
-            match = re.findall(r'\b[A-Z]{3,4}\b[.!?]?',line)
+            match = re.findall(r'\b[A-Z]{3,5}\b[.!?]?',line)
             # if match contains data
             if match:
                 # subtract from blacklist
                 match = list(set(match) - set(blacklist_words))
-
+                print(match)
+                # filter out any non-chars
+                # https://stackoverflow.com/questions/55902042/python-keep-only-alphanumeric-and-space-and-ignore-non-ascii/55902074
+                match = [re.sub(r'[^A-Za-z0-9 ]+', '', x) for x in match]
+                print(match)
 
                 for item in match:
                     file = open(tickerFile, "a")
@@ -176,16 +171,21 @@ def getTicker(commentsFile):
 
 def validateTicker(tickerFile):
     # test if it's a valid ticker
-    print("Entering Testing")
+
     validFile = "validTickers.txt"
-    NYSETicker = "NYSE.txt" #Pre-generated file TODO: Have file update when script runs
+    if os.path.exists(validFile):
+        os.remove(validFile)
+
+    # some issues with the list.. stuff like WOW and FOR and ALL and OR are included
+    NYSETicker = "NYSE.txt" #Pre-generated file TODO: Have file update when script runs and Alex tell me how you got it
     validTicker = {}
     notcounted = {}
+
     with open(NYSETicker, "r") as q:
-        print("Opened NYSE.txt")
         for line in q:
             validTicker[line.rstrip('\n')] = True
-        print(validTicker)
+      
+
     with open(tickerFile, "r") as t:
                 for line in t: #Not O(N^2) because it is only one line
                     # for each individual "ticker"
@@ -199,16 +199,9 @@ def validateTicker(tickerFile):
                                 file.write(" ")
                                 file.close()
         
-    
-    
-
-
 
 def main():
    redditAuth()
-
-    
-
     
 if __name__ == "__main__":
     main()
