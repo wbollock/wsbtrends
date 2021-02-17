@@ -6,14 +6,14 @@
 # imports
 # for reddit
 import praw
-# for stock info
-import yfinance as yf
 
+# for stock info
+#import yfinance as yf
 # yfinance seems to be the way to go for price
-    # msft = yf.Ticker("MSFT")
-    # msft.info for a dict of everything
-    # msft.info['ask'] for current price?
-    # msft.info['bid] for current.. buying price?
+# msft = yf.Ticker("MSFT")
+# msft.info for a dict of everything
+# msft.info['ask'] for current price?
+# msft.info['bid] for current.. buying price?
 
 import re
 import os
@@ -22,8 +22,7 @@ import numpy as np
 
 from collections import Counter
 
-# Major TODOs
-# TODO: get rid of my awful dependencies on files and just hold stuff in memory
+
 
 def redditAuth():
     # authenticate with Praw
@@ -38,7 +37,6 @@ def redditAuth():
 
     # https://praw.readthedocs.io/en/latest/getting_started/authentication.html
     reddit = praw.Reddit(redditUsername, user_agent=userAgent)
-    # ensure Praw stays read only
     reddit.read_only = True
 
     return getThread(reddit)
@@ -48,15 +46,8 @@ def getThread(reddit):
     # set sub
     subreddit = reddit.subreddit("wallstreetbets")
 
-    #url = "https://www.reddit.com/r/wallstreetbets/comments/l7wqsm/daily_discussion_thread_for_january_29_2021_pt_ii/"
-    #submission = reddit.submission(url=url)
-    # submission now an object
-
     # thread logic: for sure would like the two pinned posts, possibly top 10 rising posts too?
     # for submission in subreddit.rising(limit=10):
-
-    # for submission.stickied in subreddit:
-        #     print(submission)
 
     postList = []
 
@@ -65,13 +56,10 @@ def getThread(reddit):
         if submission.stickied == True:
             postList.append(submission.id)
         
-        
-    # for items in postList:
-    #     print(items)
 
     # for dev/testing
     #postList = ['kjdkdk', 'kj17ga']
-    # december 24
+    # december 24 posts
 
 
     return getComments(postList,reddit)
@@ -84,10 +72,7 @@ def getComments(postList,reddit):
     # breadth-first iteration done with .list
 
     
-    commentsFile = "comments.txt"
-    
-    if os.path.exists(commentsFile):
-        os.remove(commentsFile)
+    commentsList = []
 
     # for our stickied threads
     for item in postList:
@@ -96,38 +81,30 @@ def getComments(postList,reddit):
         # submission = id
         submission = reddit.submission(id=id)
 
-        print("Writing to file...", item, submission.title)
+        print("Analyzing...", submission.title)
 
         # limit=None is all comments
-        submission.comments.replace_more(limit=15)
+        submission.comments.replace_more(limit=None)
         # for testing
         # submission.comments.replace_more(limit=5)
+
 
         for comment in submission.comments.list():
             try: 
                 #Going to run into Unicode Encode Errors for some comments TODO: Look into Unicode Encode Errors
                 # must be some lame Windows thing
-                file = open(commentsFile, "a")
-                file.write(comment.body)
-                file.close()
+                commentsList.append(comment.body)
             except UnicodeEncodeError:
                 print(str(comment) + " couldn't be encoded.")
 
-    # just top level comments
-    # submission.comments.replace_more(limit=0)
-    # for top_level_comment in submission.comments:
-    #     print(top_level_comment.body)
-
-    # print("getComments")
-
-    return getTicker(commentsFile)
+    print(commentsList)
+    return getTicker(commentsList)
 
 
-def getTicker(commentsFile):
+def getTicker(commentsList):
     # extract ticker symbols from comments
     # still needed with NYSE file because we really only want 3-5 character, usual tickers
 
-    tickerFile =  "tickers.txt"
     tickerList = []
 
     # credit: https://github.com/RyanElliott10/wsbtickerbot/blob/master/wsbtickerbot.py
@@ -148,35 +125,22 @@ def getTicker(commentsFile):
    ]
     
 
-    # for dev/testing
-    if os.path.exists(tickerFile):
-        os.remove(tickerFile)
+  
+    #with open(commentsList) as c:
+    for line in commentsList:
+        match = re.findall(r'\b[A-Z]{3,5}\b[.!?]?',line)
+        # if match contains data
+        if match:
+            # subtract from blacklist
+            match = list(set(match) - set(blacklist_words))
+            
+            # filter out any non-chars and keep spaces
+            # match is a list of strs from one line
+            # https://stackoverflow.com/questions/55902042/python-keep-only-alphanumeric-and-space-and-ignore-non-ascii/55902074
+            match = [re.sub(r'[^A-Za-z0-9 ]+', '', x) for x in match]
 
-    # TODO: thoughts on only limiting to 3-5 character tickers? filters out a lot of stuff like OR, ALL, 
-
-    # TODO: clear special characters like BABA. (the period)
-
-    
-    with open(commentsFile) as c:
-        for line in c:
-            match = re.findall(r'\b[A-Z]{3,5}\b[.!?]?',line)
-            # if match contains data
-            if match:
-                # subtract from blacklist
-                match = list(set(match) - set(blacklist_words))
-                
-                # filter out any non-chars and keep spaces
-                # match is a list of strs from one line
-                # https://stackoverflow.com/questions/55902042/python-keep-only-alphanumeric-and-space-and-ignore-non-ascii/55902074
-                match = [re.sub(r'[^A-Za-z0-9 ]+', '', x) for x in match]
-                
-
-                for item in match:
-                    # file = open(tickerFile, "a")
-                    # file.write(item)
-                    # file.write(' ')
-                    # file.close
-                    tickerList.append(item)
+            for item in match:
+                tickerList.append(item)
 
 
     print("TICKER LIST",tickerList)
@@ -186,25 +150,19 @@ def getTicker(commentsFile):
 def validateTicker(tickerList):
     # test if it's a valid ticker
 
-    
-
-    # validFile = "validTickers.txt"
-    # if os.path.exists(validFile):
-    #     os.remove(validFile)
-
     validList = []
 
     # some issues with the list.. stuff like WOW and FOR and ALL and OR are included
     NYSETicker = "NYSE.txt" #Pre-generated file TODO: Have file update when script runs and Alex tell me how you got it
     validTicker = {}
-    notcounted = {}
+    
+    # Not sure why we wanted to not count words repeatedly?
 
     with open(NYSETicker, "r") as q:
         for line in q:
             validTicker[line.rstrip('\n')] = True
       
 
-    
     for line in tickerList: #Not O(N^2) because it is only one line
         # for each individual "ticker"
         for word in line.split():
@@ -219,12 +177,9 @@ def validateTicker(tickerList):
 def countTickers(validList):
     # get count of most used tickers
 
-   
     # https://stackoverflow.com/questions/2600191/how-can-i-count-the-occurrences-of-a-list-item
     # Counter does everything in a nice json-esque format
     
-    print("VALID LIST", validList)
-
     countFile = "output"
     if os.path.exists(countFile):
         os.remove(countFile)

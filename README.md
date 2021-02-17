@@ -19,15 +19,15 @@ Another file titled `praw.ini` with your praw settings is recommended.
 
 ## Planning
 
-1. Learn how to crawl reddit, specifically the DD WSB thread in this format:
-   * Appears to be two pinned threads:
+~~1. Learn how to crawl reddit, specifically the DD WSB thread in this format:~~
+   * ~~Appears to be two pinned threads:~~
      * [What Are Your Moves Tomorrow, November 24, 2020](https://www.reddit.com/r/wallstreetbets/comments/jzqior/what_are_your_moves_tomorrow_november_24_2020/)
      * [Daily Discussion Thread for November 24, 2020](https://www.reddit.com/r/wallstreetbets/comments/k03375/daily_discussion_thread_for_november_24_2020/)
-   * On big discussion days there appear to be multiple thread parts.
+   * On big discussion days there appear to be multiple thread parts. (**Need to aggregate data**)
         * [Daily Discussion Thread Part 5 for January 28, 2021](https://www.reddit.com/r/wallstreetbets/comments/l78za1/daily_discussion_thread_part_5_for_january_28_2021/)
 
-2. Collect comments in some format of the two daily threads.
-3. Store them somewhere.
+2. ~~Collect comments in some format of the two daily threads.~~
+3. ~~Store them somewhere.~~
 4. Count for most $stock/ticker mentions.
 5. Display in graph.
 6. Publish graph to web page.
