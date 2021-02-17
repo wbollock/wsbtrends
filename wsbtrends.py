@@ -121,7 +121,7 @@ def getTicker(commentsList):
       "OP", "DJIA", "PS", "AH", "TL", "DR", "JAN", "FEB", "JUL", "AUG",
       "SEP", "SEPT", "OCT", "NOV", "DEC", "FDA", "IV", "ER", "IPO", "RISE"
       "IPA", "URL", "MILF", "BUT", "SSN", "FIFA", "USD", "CPU", "AT",
-      "GG", "ELON", "GOP", "IPO", "WSB", "HIS", "THE", "ARK", "FUCK"
+      "GG", "ELON", "GOP", "IPO", "WSB", "HIS", "THE", "ARK", "FUCK", "FOR"
    ]
     
 
@@ -187,6 +187,9 @@ def countTickers(validList):
     with open(countFile, "a") as file:
         file.write(str(Counter(validList)))
         file.close()
+
+    # remove later
+    print(Counter(validList))
 
 def main():
    redditAuth()
