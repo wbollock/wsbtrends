@@ -99,7 +99,7 @@ def getComments(postList,reddit):
         print("Writing to file...", item, submission.title)
 
         # limit=None is all comments
-        submission.comments.replace_more(limit=None)
+        submission.comments.replace_more(limit=15)
         # for testing
         # submission.comments.replace_more(limit=5)
 
@@ -178,6 +178,8 @@ def getTicker(commentsFile):
                     # file.close
                     tickerList.append(item)
 
+
+    print("TICKER LIST",tickerList)
     return validateTicker(tickerList)
                         
 
@@ -208,15 +210,8 @@ def validateTicker(tickerList):
         for word in line.split():
             # attempt to validate ticker
             if validTicker.get(word, False):
-                if notcounted.get(word, True):
-                    notcounted[word] = False
-                    # write successful matches to list
-                    validList.append(word)
-                    #file = open(validFile, "a")
-                    #file.write(word)
-                    #file.write(" ")
-                    #file.close()
-
+                validList.append(word)
+                    
 
     return countTickers(validList)
         
@@ -227,14 +222,15 @@ def countTickers(validList):
    
     # https://stackoverflow.com/questions/2600191/how-can-i-count-the-occurrences-of-a-list-item
     # Counter does everything in a nice json-esque format
-    print(Counter(validList))
+    
+    print("VALID LIST", validList)
 
-    countFile = "output.txt"
+    countFile = "output"
     if os.path.exists(countFile):
         os.remove(countFile)
 
     with open(countFile, "a") as file:
-        file.write(Counter(validList))
+        file.write(str(Counter(validList)))
         file.close()
 
 def main():
