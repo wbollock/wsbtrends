@@ -18,6 +18,13 @@ import yfinance as yf
 import re
 import os
 
+import numpy as np
+
+from collections import Counter
+
+# Major TODOs
+# TODO: get rid of my awful dependencies on files and just hold stuff in memory
+
 def redditAuth():
     # authenticate with Praw
     # create file "reddit_name"
@@ -92,12 +99,14 @@ def getComments(postList,reddit):
         print("Writing to file...", item, submission.title)
 
         # limit=None is all comments
-        submission.comments.replace_more(limit=20)
+        submission.comments.replace_more(limit=None)
         # for testing
         # submission.comments.replace_more(limit=5)
 
         for comment in submission.comments.list():
-            try: #Going to run into Unicode Encode Errors for some comments TODO: Look into Unicode Encode Errors
+            try: 
+                #Going to run into Unicode Encode Errors for some comments TODO: Look into Unicode Encode Errors
+                # must be some lame Windows thing
                 file = open(commentsFile, "a")
                 file.write(comment.body)
                 file.close()
@@ -119,6 +128,7 @@ def getTicker(commentsFile):
     # still needed with NYSE file because we really only want 3-5 character, usual tickers
 
     tickerFile =  "tickers.txt"
+    tickerList = []
 
     # credit: https://github.com/RyanElliott10/wsbtickerbot/blob/master/wsbtickerbot.py
     # common words on WSB to ignore
@@ -154,27 +164,33 @@ def getTicker(commentsFile):
             if match:
                 # subtract from blacklist
                 match = list(set(match) - set(blacklist_words))
-                print(match)
-                # filter out any non-chars
+                
+                # filter out any non-chars and keep spaces
+                # match is a list of strs from one line
                 # https://stackoverflow.com/questions/55902042/python-keep-only-alphanumeric-and-space-and-ignore-non-ascii/55902074
                 match = [re.sub(r'[^A-Za-z0-9 ]+', '', x) for x in match]
-                print(match)
+                
 
                 for item in match:
-                    file = open(tickerFile, "a")
-                    file.write(item)
-                    file.write(' ')
-                    file.close
+                    # file = open(tickerFile, "a")
+                    # file.write(item)
+                    # file.write(' ')
+                    # file.close
+                    tickerList.append(item)
 
-    return validateTicker(tickerFile)
+    return validateTicker(tickerList)
                         
 
-def validateTicker(tickerFile):
+def validateTicker(tickerList):
     # test if it's a valid ticker
 
-    validFile = "validTickers.txt"
-    if os.path.exists(validFile):
-        os.remove(validFile)
+    
+
+    # validFile = "validTickers.txt"
+    # if os.path.exists(validFile):
+    #     os.remove(validFile)
+
+    validList = []
 
     # some issues with the list.. stuff like WOW and FOR and ALL and OR are included
     NYSETicker = "NYSE.txt" #Pre-generated file TODO: Have file update when script runs and Alex tell me how you got it
@@ -186,19 +202,40 @@ def validateTicker(tickerFile):
             validTicker[line.rstrip('\n')] = True
       
 
-    with open(tickerFile, "r") as t:
-                for line in t: #Not O(N^2) because it is only one line
-                    # for each individual "ticker"
-                    for word in line.split():
-                        # attempt to validate ticker
-                        if validTicker.get(word, False):
-                            if notcounted.get(word, True):
-                                notcounted[word] = False
-                                file = open(validFile, "a")
-                                file.write(word)
-                                file.write(" ")
-                                file.close()
+    
+    for line in tickerList: #Not O(N^2) because it is only one line
+        # for each individual "ticker"
+        for word in line.split():
+            # attempt to validate ticker
+            if validTicker.get(word, False):
+                if notcounted.get(word, True):
+                    notcounted[word] = False
+                    # write successful matches to list
+                    validList.append(word)
+                    #file = open(validFile, "a")
+                    #file.write(word)
+                    #file.write(" ")
+                    #file.close()
+
+
+    return countTickers(validList)
         
+
+def countTickers(validList):
+    # get count of most used tickers
+
+   
+    # https://stackoverflow.com/questions/2600191/how-can-i-count-the-occurrences-of-a-list-item
+    # Counter does everything in a nice json-esque format
+    print(Counter(validList))
+
+    countFile = "output.txt"
+    if os.path.exists(countFile):
+        os.remove(countFile)
+
+    with open(countFile, "a") as file:
+        file.write(Counter(validList))
+        file.close()
 
 def main():
    redditAuth()
