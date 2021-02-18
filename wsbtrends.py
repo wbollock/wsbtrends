@@ -15,6 +15,10 @@ import praw
 # msft.info['ask'] for current price?
 # msft.info['bid] for current.. buying price?
 
+# Major TODOs
+# 1. Speed kinda sucks
+
+
 import re
 import os
 

@@ -13,9 +13,11 @@ Reddit user [pdwp90](https://www.reddit.com/user/pdwp90) also has a similar proj
 * python-praw
 * praw [Reddit API Access](https://praw.readthedocs.io/en/latest/getting_started/authentication.html)
 
-Create a file titled `reddit_name` in your project folder with your desired Reddit username.
+1. Create a file titled `reddit_name` in your project folder with your desired Reddit username.
 
-Another file titled `praw.ini` with your praw settings is recommended.
+2. Another file titled `praw.ini` with your [praw settings](https://praw.readthedocs.io/en/latest/getting_started/authentication.html) is recommended.
+
+3. `pip3 install -r requirements.txt`
 
 ## Planning
 
@@ -28,12 +30,13 @@ Another file titled `praw.ini` with your praw settings is recommended.
 
 2. ~~Collect comments in some format of the two daily threads.~~
 3. ~~Store them somewhere.~~
-4. Count for most $stock/ticker mentions.
-5. Display in graph.
-6. Publish graph to web page.
-7. Calculate % change in last day, week?
+4. ~~Count for most $stock/ticker mentions.~~
+5. Put in database.
+6. Display in graph, grab from database.
+7. Publish graph to web page. 
+8. Allow user to change view, e.g mentions of GME over time. Calculate % change in last day, week?
 
-## Features
+## Feature Goals
 
 * Obviously price of the $stock would be useful
 * % change over time
