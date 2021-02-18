@@ -1,17 +1,14 @@
 # wsbtrends
 
-This project is meant to show trending `$stocks` on /r/wallstreetbets in a simple manner. Ideally, it will be able to fetch trending stocks within short time frames, for example the last 30 minutes, 1 hour, etc.
+Scraping reddit's /r/wallstreetbets to obtain occurrences of frequently mentioned stock tickers.
 
-## Inspiration
+## Current Features
 
-[Swaggy Stocks](https://swaggystocks.com/dashboard/wallstreetbets/ticker-sentiment) has done this better than I could ever hope, with sentiment analysis and neural networks.
-
-Reddit user [pdwp90](https://www.reddit.com/user/pdwp90) also has a similar project.
+* Authenticate with reddit API and scrap two current pinned posts
+* Validate actual NYSE ticker symbols
+* Count their occurrences
 
 ## Requirements
-
-* python-praw
-* praw [Reddit API Access](https://praw.readthedocs.io/en/latest/getting_started/authentication.html)
 
 1. Create a file titled `reddit_name` in your project folder with your desired Reddit username.
 
@@ -51,3 +48,4 @@ Reddit user [pdwp90](https://www.reddit.com/user/pdwp90) also has a similar proj
 * [PRAW Getting Started](https://praw.readthedocs.io/en/v7.1.0/getting_started/quick_start.html)
 * [Reddit API Wiki](https://github.com/reddit-archive/reddit/wiki/API)
 * [Python Structure](https://www.reddit.com/r/learnpython/comments/37lbe3/which_is_more_pythonic_should_i_have_a_main/)
+* Reddit user [pdwp90](https://www.reddit.com/user/pdwp90) also has a similar project.
