@@ -43,12 +43,7 @@ Reddit user [pdwp90](https://www.reddit.com/user/pdwp90) also has a similar proj
 * End goal is to identify the gravy trains as they're starting
 
 
-        
-
-
-
-
-## Resources
+## Resources and Inspiration
 
 * [wsbtickerbot](https://github.com/RyanElliott10/wsbtickerbot) Damn, this seems to be most of what I need.
 * [Swaggy Stocks Reddit Post](https://www.reddit.com/r/wallstreetbets/comments/blukl1/i_created_a_fullblown_wallstreetbets_sentiment/)
@@ -56,11 +51,3 @@ Reddit user [pdwp90](https://www.reddit.com/user/pdwp90) also has a similar proj
 * [PRAW Getting Started](https://praw.readthedocs.io/en/v7.1.0/getting_started/quick_start.html)
 * [Reddit API Wiki](https://github.com/reddit-archive/reddit/wiki/API)
 * [Python Structure](https://www.reddit.com/r/learnpython/comments/37lbe3/which_is_more_pythonic_should_i_have_a_main/)
-
-
-## Technologies
-
-* Scrapper
-   * Python on cron seems to be my favorite. Wonder if I'll hit API limits. API limit seems to be 60 requests per minute.
-* No more large text files. SQLite seems to be a good option for storage.
-* PHP for presentation as always? I'd like to use some python graphs

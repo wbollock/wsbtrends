@@ -6,6 +6,11 @@
 # imports
 # for reddit
 import praw
+import re
+import os
+import numpy as np
+from collections import Counter
+from pathlib import Path
 
 # for stock info
 #import yfinance as yf
@@ -17,21 +22,33 @@ import praw
 
 # Major TODOs
 # 1. Speed kinda sucks
+# 2. First run detection to create file "reddit_name"
 
 
-import re
-import os
 
-import numpy as np
-
-from collections import Counter
 
 
 
 def redditAuth():
     # authenticate with Praw
-    # create file "reddit_name"
-    redditFileName = "reddit_name"
+    
+    redditFileName = "config/reddit_name"
+    redditFilePath = Path("config/reddit_name")
+
+    # first run detection
+    # if file exists
+    # **must configure praw.ini also**
+    if not redditFilePath.is_file():
+        print("\n")
+        print("First run detected.")
+        print("Please enter desired Reddit username to interact with the Reddit API.")
+        print("**Configure praw.ini too**.")
+        print("\n")
+        newuser = input("Username: ")
+        with open(redditFileName, "w") as f:
+            f.write(newuser)
+
+        
 
     with open(redditFileName, 'r') as file:
         redditUsername = file.read().replace('\n', '')
@@ -157,10 +174,11 @@ def validateTicker(tickerList):
     validList = []
 
     # some issues with the list.. stuff like WOW and FOR and ALL and OR are included
-    NYSETicker = "NYSE.txt" #Pre-generated file TODO: Have file update when script runs and Alex tell me how you got it
+    # TODO: Have file update when script runs and Alex tell me how you got it
+    NYSETicker = "stocks/NYSE.txt" #Pre-generated file 
+    
     validTicker = {}
     
-    # Not sure why we wanted to not count words repeatedly?
 
     with open(NYSETicker, "r") as q:
         for line in q:
