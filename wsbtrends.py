@@ -11,6 +11,8 @@ import os
 import numpy as np
 from collections import Counter
 from pathlib import Path
+from pymongo import MongoClient
+from datetime import datetime
 
 # for stock info
 #import yfinance as yf
@@ -22,7 +24,6 @@ from pathlib import Path
 
 # Major TODOs
 # 1. Speed kinda sucks
-# 2. First run detection to create file "reddit_name"
 
 
 
@@ -79,7 +80,7 @@ def getThread(reddit):
         
 
     # for dev/testing
-    #postList = ['kjdkdk', 'kj17ga']
+    # postList = ['kjdkdk', 'kj17ga']
     # december 24 posts
 
 
@@ -89,13 +90,12 @@ def getThread(reddit):
 def getComments(postList,reddit):
 
     # allows all comments to be gathered, replacing "MoreComments" with a valid object
-    # literally every comment, top level and all level here
+    
     # breadth-first iteration done with .list
 
-    
     commentsList = []
 
-    # for our stickied threads
+    # for stickied threads
     for item in postList:
         id = item
 
@@ -104,10 +104,11 @@ def getComments(postList,reddit):
 
         print("Analyzing...", submission.title)
 
-        # limit=None is all comments
+        # limit=None is all top-level comments
         submission.comments.replace_more(limit=None)
+
         # for testing
-        # submission.comments.replace_more(limit=5)
+        # submission.comments.replace_more(limit=2)
 
 
         for comment in submission.comments.list():
@@ -118,7 +119,7 @@ def getComments(postList,reddit):
             except UnicodeEncodeError:
                 print(str(comment) + " couldn't be encoded.")
 
-    print(commentsList)
+    
     return getTicker(commentsList)
 
 
@@ -164,7 +165,7 @@ def getTicker(commentsList):
                 tickerList.append(item)
 
 
-    print("TICKER LIST",tickerList)
+    
     return validateTicker(tickerList)
                         
 
@@ -202,16 +203,59 @@ def countTickers(validList):
     # https://stackoverflow.com/questions/2600191/how-can-i-count-the-occurrences-of-a-list-item
     # Counter does everything in a nice json-esque format
     
-    countFile = "output"
-    if os.path.exists(countFile):
-        os.remove(countFile)
+    occurDict = dict(Counter(validList))
 
-    with open(countFile, "a") as file:
-        file.write(str(Counter(validList)))
-        file.close()
+    # add datetime to our dict
+    now = datetime.now()
+    print(now)
 
-    # remove later
-    print(Counter(validList))
+    occurDict['Datetime'] = now
+    # adds "Datetime" : ISODate("2021-02-18T19:14:19.098Z") }
+
+    return database_connect(occurDict)
+
+
+def database_connect(occurDict):
+    # connect to mongodb
+    client = MongoClient()
+    # default host/port
+    wsb_db = client["wsbtrends"]
+    wsb_collection = wsb_db["tickers"]
+
+    wsb_collection.insert_one(occurDict)
+
+    print("inserted")
+    # example format
+    # { "_id" : ObjectId("602efd1579c4c1e48b1f8dcd"), "PLTR" : 108, "AMC" : 8, "GME" : 52}
+    # { "_id" : ObjectId("602efd5a34e11d4cdd52588c"), "PLTR" : 110, "AMC" : 8, "GME" : 52}
+    
+    # won't even have to do date-time because mongodb's objectIDs are embedded timestamp of creation
+    # https://steveridout.github.io/mongo-object-time/
+    # for example, finding all ticker insertions after 7pm EST 02/18
+    # db.tickers.find({_id: {$gt: ObjectId("602eff800000000000000000")}})
+    # or to get timestamp:
+    # > ObjectId("602efd5a34e11d4cdd52588c").getTimestamp()
+    # ISODate("2021-02-18T23:50:50Z")
+
+    # more example commands for now because my mongo is rusty
+    # find PLTR at 120
+    # db.tickers.find({"PLTR": 120})
+    # find where PLTR is greater than 109
+    # db.tickers.find( { "PLTR": { $gt: 109 } })
+    # remove all objects
+    # db.tickers.remove({})
+
+
+
+    # Questions to ponder:
+    # 1. Add date field directly to the mongo dict?
+    # 2. Incrementally add data or do full days at a time?
+    # 3. Structure. Say I wanted to find the highest stock mention of the object
+    # db.ticker.find().sort({"PLTR":-1}).limit(1) // for MAX
+    # can't, because the "PLTR" object is a weird format
+    # instead, might be best to do "TICKER" : "PLTR", "MENTIONS" : 404, "Datetime", etc
+    # but that's a lot of objects. how would i transform this data?
+
 
 def main():
    redditAuth()

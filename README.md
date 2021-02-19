@@ -16,6 +16,10 @@ Scraping reddit's /r/wallstreetbets to obtain occurrences of frequently mentione
 
 3. `pip3 install -r requirements.txt`
 
+4. MongoDB ([Arch Linux](https://aur.archlinux.org/packages/mongodb-bin/))
+
+5. Cron job for every 3 hours (`crontab -l 2>/dev/null; echo "0 */3 * * * /path/to/script") | crontab -`)
+
 ## Planning
 
 ~~1. Learn how to crawl reddit, specifically the DD WSB thread in this format:~~
@@ -31,7 +35,10 @@ Scraping reddit's /r/wallstreetbets to obtain occurrences of frequently mentione
 5. Put in database.
 6. Display in graph, grab from database.
 7. Publish graph to web page. 
-8. Allow user to change view, e.g mentions of GME over time. Calculate % change in last day, week?
+8. Allow user to change view, e.g mentions of GME over time. Calculate % change in last day, week
+9. Verify data is correct by pointing scrapper to own subreddit with known values
+10. Investigate best threads to scrape and time to scrape - are pinned posts the best answer? When is the "What are your moves tomorrow thread" generally "done"?
+
 
 ## Feature Goals
 
@@ -42,7 +49,7 @@ Scraping reddit's /r/wallstreetbets to obtain occurrences of frequently mentione
 
 ## Resources and Inspiration
 
-* [wsbtickerbot](https://github.com/RyanElliott10/wsbtickerbot) Damn, this seems to be most of what I need.
+* [wsbtickerbot](https://github.com/RyanElliott10/wsbtickerbot)
 * [Swaggy Stocks Reddit Post](https://www.reddit.com/r/wallstreetbets/comments/blukl1/i_created_a_fullblown_wallstreetbets_sentiment/)
 * [Reddit Scraping Guide 2018](https://www.storybench.org/how-to-scrape-reddit-with-python/)
 * [PRAW Getting Started](https://praw.readthedocs.io/en/v7.1.0/getting_started/quick_start.html)
