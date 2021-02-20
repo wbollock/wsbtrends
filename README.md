@@ -18,7 +18,7 @@ Scraping reddit's /r/wallstreetbets to obtain occurrences of frequently mentione
 
 4. MongoDB ([Arch Linux](https://aur.archlinux.org/packages/mongodb-bin/))
 
-5. Cron job for every 3 hours (`crontab -l 2>/dev/null; echo "0 */3 * * * /path/to/script") | crontab -`)
+5. Cron job for every 3 hours (`crontab -l 2>/dev/null; echo "0 */3 * * * python3 /full/path/to/project/wsbtrends.py" | crontab -`)
 
 ## Planning
 
