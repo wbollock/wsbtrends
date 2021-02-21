@@ -45,6 +45,7 @@ Scraping reddit's /r/wallstreetbets to obtain occurrences of frequently mentione
 * Obviously price of the $stock would be useful
 * % change over time
 * End goal is to identify the gravy trains as they're starting
+* Expand/fork for /r/cryptocurrency
 
 
 ## Resources and Inspiration
