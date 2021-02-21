@@ -237,7 +237,7 @@ def countTickers(validList):
     occurDict['Datetime'] = now
     # adds "Datetime" : ISODate("2021-02-18T19:14:19.098Z") }
     with open(logPath, 'a') as f:
-        f.write("Inserted values into MongoDB at " + now)
+        f.write("Inserted values into MongoDB at " + str(now))
         f.close()
 
     return database_connect(occurDict)
