@@ -1,3 +1,4 @@
 praw.ini
 reddit_name
 output
+logs/*

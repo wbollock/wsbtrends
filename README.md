@@ -18,7 +18,7 @@ Scraping reddit's /r/wallstreetbets to obtain occurrences of frequently mentione
 
 4. MongoDB ([Arch Linux](https://aur.archlinux.org/packages/mongodb-bin/))
 
-5. Cron job for every 3 hours (`crontab -l 2>/dev/null; echo "0 */3 * * * python3 /full/path/to/project/wsbtrends.py" | crontab -`)
+5. Install a cron job for every 3 hours (`crontab -l 2>/dev/null; echo "0 */3 * * * cd /full/path/to/project && python3 wsbtrends.py" | crontab -`)
 
 ## Planning
 
@@ -45,6 +45,7 @@ Scraping reddit's /r/wallstreetbets to obtain occurrences of frequently mentione
 * Obviously price of the $stock would be useful
 * % change over time
 * End goal is to identify the gravy trains as they're starting
+* Expand/fork for /r/cryptocurrency
 
 
 ## Resources and Inspiration

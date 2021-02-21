@@ -25,16 +25,29 @@ from datetime import datetime
 # Major TODOs
 # 1. Speed kinda sucks
 
+# Global.. is this sinful?
+now = datetime.now().strftime("%Y_%m_%d-%H:%M:%S")
 
+# relative paths from current working directory
+base_path = Path(__file__).parent
+logPath = str(base_path) + "/logs/" + "wsbtrends_" + str(now) + ".log"
 
+def logCreate():
+    # create log file for writing throughout program
+    # log run start
+    with open(logPath, 'w') as f:
+        f.write("wsbtrends.py - start of run:\n")
+        f.write(str(now))
+        f.write("\n")
+        f.close()
 
-
+    return redditAuth()
 
 def redditAuth():
     # authenticate with Praw
     
-    redditFileName = "config/reddit_name"
-    redditFilePath = Path("config/reddit_name")
+    redditFileName = str(base_path) + "/config/reddit_name"
+    redditFilePath = Path(str(base_path) + "/config/reddit_name")
 
     # first run detection
     # if file exists
@@ -48,6 +61,11 @@ def redditAuth():
         newuser = input("Username: ")
         with open(redditFileName, "w") as f:
             f.write(newuser)
+            f.close()
+
+        with open(logPath, 'a') as f:
+            f.write("Error: " + redditFileName + " not found.")
+            f.close()
 
         
 
@@ -104,6 +122,10 @@ def getComments(postList,reddit):
 
         print("Analyzing...", submission.title)
 
+        with open(logPath, 'a') as f:
+            f.write("Scrapping: " + submission.title)
+            f.close()
+
         # limit=None is all top-level comments
         submission.comments.replace_more(limit=None)
 
@@ -117,7 +139,10 @@ def getComments(postList,reddit):
                 # must be some lame Windows thing
                 commentsList.append(comment.body)
             except UnicodeEncodeError:
-                print(str(comment) + " couldn't be encoded.")
+                #print(str(comment) + " couldn't be encoded.")
+                with open(logPath, 'a') as f:
+                    f.write(str(comment) + " couldn't be encoded.")
+                    f.close()
 
     
     return getTicker(commentsList)
@@ -207,10 +232,13 @@ def countTickers(validList):
 
     # add datetime to our dict
     now = datetime.now()
-    print(now)
+    #print(now)
 
     occurDict['Datetime'] = now
     # adds "Datetime" : ISODate("2021-02-18T19:14:19.098Z") }
+    with open(logPath, 'a') as f:
+        f.write("Inserted values into MongoDB at " + now)
+        f.close()
 
     return database_connect(occurDict)
 
@@ -225,6 +253,9 @@ def database_connect(occurDict):
     wsb_collection.insert_one(occurDict)
 
     print("inserted")
+    
+
+    
     # example format
     # { "_id" : ObjectId("602efd1579c4c1e48b1f8dcd"), "PLTR" : 108, "AMC" : 8, "GME" : 52}
     # { "_id" : ObjectId("602efd5a34e11d4cdd52588c"), "PLTR" : 110, "AMC" : 8, "GME" : 52}
@@ -258,7 +289,7 @@ def database_connect(occurDict):
 
 
 def main():
-   redditAuth()
+   logCreate()
     
 if __name__ == "__main__":
     main()
