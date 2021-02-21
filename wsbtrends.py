@@ -27,7 +27,10 @@ from datetime import datetime
 
 # Global.. is this sinful?
 now = datetime.now().strftime("%Y_%m_%d-%H:%M:%S")
-logPath = "logs/" + "wsbtrends_" + str(now) + ".log"
+
+# relative paths from current working directory
+base_path = Path(__file__).parent
+logPath = str(base_path) + "/logs/" + "wsbtrends_" + str(now) + ".log"
 
 def logCreate():
     # create log file for writing throughout program
@@ -43,8 +46,8 @@ def logCreate():
 def redditAuth():
     # authenticate with Praw
     
-    redditFileName = "config/reddit_name"
-    redditFilePath = Path("config/reddit_name")
+    redditFileName = str(base_path) + "/config/reddit_name"
+    redditFilePath = Path(str(base_path) + "/config/reddit_name")
 
     # first run detection
     # if file exists
