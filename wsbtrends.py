@@ -24,7 +24,7 @@ from datetime import datetime
 
 # Major TODOs
 # 1. Speed kinda sucks
-
+# 2. Web Frontend
 
 # Global.. is this sinful?
 logStart = datetime.now().strftime("%Y_%m_%d-%H:%M:%S")
