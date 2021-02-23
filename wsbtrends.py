@@ -288,6 +288,9 @@ def database_insert(validList):
     # sort by highest numbers in "Count"
     # db.tickers.find().sort({"Count":-1})
 
+    # Return all Tickers and Counts, surpress ID
+    # db.tickers.find({}, {"Ticker":1, "Count":1, _id:0})
+
 
 def main():
    logCreate()
