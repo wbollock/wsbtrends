@@ -221,79 +221,72 @@ def validateTicker(tickerList):
                 validList.append(word)
                     
 
-    return countTickers(validList)
+    return database_insert(validList)
         
 
-def countTickers(validList):
+def database_insert(validList):
     # get count of most used tickers
 
     # https://stackoverflow.com/questions/2600191/how-can-i-count-the-occurrences-of-a-list-item
     # Counter does everything in a nice json-esque format
     
     occurDict = dict(Counter(validList))
+    tickerDict = {}
 
     # add datetime to our dict
     now = datetime.now()
     #print(now)
 
-    occurDict['Datetime'] = now
-    # adds "Datetime" : ISODate("2021-02-18T19:14:19.098Z") }
-    with open(logPath, 'a') as f:
-        f.write("\nInserted values into MongoDB at " + str(now))
-        f.close()
+    # goal is "Ticker" : PLTR, "AMC" : 8, "GME" : 52}
 
-    return database_connect(occurDict,now)
-
-
-def database_connect(occurDict,now):
     # connect to mongodb
     client = MongoClient()
     # default host/port
     wsb_db = client["wsbtrends"]
     wsb_collection = wsb_db["tickers"]
 
-    wsb_collection.insert_one(occurDict)
+    # convert native Counter dict to a more usable format
+    for key, value in occurDict.items():
+        # print(key,value)
+        # tickerDict[key] = {}
+        # tickerDict[key]['Ticker'] = key
+        # tickerDict[key]['Count'] = value
+        # tickerDict[key]['Datetime'] = now
+
+        tickerDict['Ticker'] = key
+        tickerDict['Count'] = value
+        tickerDict['Datetime'] = now
+        wsb_collection.insert_one(tickerDict)
+        tickerDict = {}
 
     print("Done, inserted into mongo")
+
+    
+    # adds "Datetime" : ISODate("2021-02-18T19:14:19.098Z") }
+    with open(logPath, 'a') as f:
+        f.write("\nInserted values into MongoDB at " + str(now))
+        f.close()
+
+
     timeElapsed = now - start
     
     with open(logPath, 'a') as f:
         f.write("\nTime elapsed: " + str(timeElapsed))
         f.close()
-
-    
-
-    
-    # example format
-    # { "_id" : ObjectId("602efd1579c4c1e48b1f8dcd"), "PLTR" : 108, "AMC" : 8, "GME" : 52}
-    # { "_id" : ObjectId("602efd5a34e11d4cdd52588c"), "PLTR" : 110, "AMC" : 8, "GME" : 52}
-    
-    # won't even have to do date-time because mongodb's objectIDs are embedded timestamp of creation
-    # https://steveridout.github.io/mongo-object-time/
-    # for example, finding all ticker insertions after 7pm EST 02/18
-    # db.tickers.find({_id: {$gt: ObjectId("602eff800000000000000000")}})
-    # or to get timestamp:
-    # > ObjectId("602efd5a34e11d4cdd52588c").getTimestamp()
-    # ISODate("2021-02-18T23:50:50Z")
+ 
 
     # more example commands for now because my mongo is rusty
-    # find PLTR at 120
-    # db.tickers.find({"PLTR": 120})
-    # find where PLTR is greater than 109
-    # db.tickers.find( { "PLTR": { $gt: 109 } })
+    # find GME at 185
+    # db.tickers.find({"Ticker":"GME", "Count":185})
+
+    # find where GME is greater than 90
+    # db.tickers.find({"Ticker":"GME", "Count": {$gt: 90}})
+
     # remove all objects
     # db.tickers.remove({})
 
-
-
-    # Questions to ponder:
-    # 1. Add date field directly to the mongo dict?
-    # 2. Incrementally add data or do full days at a time?
-    # 3. Structure. Say I wanted to find the highest stock mention of the object
-    # db.ticker.find().sort({"PLTR":-1}).limit(1) // for MAX
-    # can't, because the "PLTR" object is a weird format
-    # instead, might be best to do "TICKER" : "PLTR", "MENTIONS" : 404, "Datetime", etc
-    # but that's a lot of objects. how would i transform this data?
+    # sort by highest numbers in "Count"
+    # db.tickers.find().sort({"Count":-1})
 
 
 def main():
