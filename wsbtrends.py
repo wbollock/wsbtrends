@@ -25,19 +25,21 @@ from datetime import datetime
 # Major TODOs
 # 1. Speed kinda sucks
 
+
 # Global.. is this sinful?
-now = datetime.now().strftime("%Y_%m_%d-%H:%M:%S")
+logStart = datetime.now().strftime("%Y_%m_%d-%H:%M:%S")
+start = datetime.now()
 
 # relative paths from current working directory
 base_path = Path(__file__).parent
-logPath = str(base_path) + "/logs/" + "wsbtrends_" + str(now) + ".log"
+logPath = str(base_path) + "/logs/" + "wsbtrends_" + str(logStart) + ".log"
 
 def logCreate():
     # create log file for writing throughout program
     # log run start
     with open(logPath, 'w') as f:
         f.write("wsbtrends.py - start of run:\n")
-        f.write(str(now))
+        f.write(str(logStart))
         f.write("\n")
         f.close()
 
@@ -123,7 +125,7 @@ def getComments(postList,reddit):
         print("Analyzing...", submission.title)
 
         with open(logPath, 'a') as f:
-            f.write("Scrapping: " + submission.title)
+            f.write("Scrapping: " + submission.title + "\n")
             f.close()
 
         # limit=None is all top-level comments
@@ -237,13 +239,13 @@ def countTickers(validList):
     occurDict['Datetime'] = now
     # adds "Datetime" : ISODate("2021-02-18T19:14:19.098Z") }
     with open(logPath, 'a') as f:
-        f.write("Inserted values into MongoDB at " + str(now))
+        f.write("\nInserted values into MongoDB at " + str(now))
         f.close()
 
-    return database_connect(occurDict)
+    return database_connect(occurDict,now)
 
 
-def database_connect(occurDict):
+def database_connect(occurDict,now):
     # connect to mongodb
     client = MongoClient()
     # default host/port
@@ -252,7 +254,13 @@ def database_connect(occurDict):
 
     wsb_collection.insert_one(occurDict)
 
-    print("inserted")
+    print("Done, inserted into mongo")
+    timeElapsed = now - start
+    
+    with open(logPath, 'a') as f:
+        f.write("\nTime elapsed: " + str(timeElapsed))
+        f.close()
+
     
 
     

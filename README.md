@@ -57,3 +57,4 @@ Scraping reddit's /r/wallstreetbets to obtain occurrences of frequently mentione
 * [Reddit API Wiki](https://github.com/reddit-archive/reddit/wiki/API)
 * [Python Structure](https://www.reddit.com/r/learnpython/comments/37lbe3/which_is_more_pythonic_should_i_have_a_main/)
 * Reddit user [pdwp90](https://www.reddit.com/user/pdwp90) also has a similar project.
+* [Django 101](https://docs.djangoproject.com/en/2.2/intro/tutorial01/)
